@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>College Club Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary: #1a1a2e;
+    --accent: #e94560;
+    --accent2: #0f3460;
+    --accent3: #533483;
+    --surface: #ffffff;
+    --surface2: #f6f5ff;
+    --surface3: #ede9fe;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(26,26,46,0.08);
+    --shadow-lg: 0 8px 40px rgba(26,26,46,0.14);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface2);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ─── Sidebar ─────────────────────────────── */
+  .sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: var(--primary);
+    position: fixed;
+    top: 0; left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    padding: 0 0 2rem;
+  }
+
+  .logo {
+    padding: 2rem 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px;
+    font-size: 22px;
+  }
+  .logo h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+  }
+  .logo p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .nav {
+    padding: 1.5rem 0.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding: 0.5rem 0.75rem 0.25rem;
+    margin-top: 0.75rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.18s ease;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: rgba(233,69,96,0.18); color: #fff; font-weight: 500; }
+  .nav-item.active .nav-icon { color: var(--accent); }
+  .nav-icon { font-size: 17px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 0 0.75rem;
+  }
+  .user-badge {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg,#e94560,#533483);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: #fff;
+    flex-shrink: 0;
+  }
+  .user-info p { font-size: 13px; color: #fff; font-weight: 500; }
+  .user-info span { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ─── Main Content ─────────────────────────── */
+  .main {
+    margin-left: 260px;
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .page-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+  .breadcrumb { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+  .btn {
+    padding: 0.5rem 1.1rem;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #c73652; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233,69,96,0.35); }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--surface3); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); background: var(--surface2); }
+  .btn-danger {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+  }
+  .btn-danger:hover { background: #fca5a5; }
+  .btn-success-ghost {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+  }
+  .btn-sm { padding: 0.35rem 0.75rem; font-size: 12px; }
+
+  .content {
+    padding: 2rem;
+    flex: 1;
+  }
+
+  /* ─── Views ───────────────────────────────── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ─── Stats Cards ─────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .stat-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .stat-icon.purple { background: #ede9fe; }
+  .stat-icon.red { background: #fee2e2; }
+  .stat-icon.green { background: #d1fae5; }
+  .stat-icon.blue { background: #dbeafe; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; letter-spacing: 0.3px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; }
+
+  /* ─── Cards / Tables ─────────────────────── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; }
+  .card-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td {
+    padding: 1rem 1.5rem;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  /* ─── Badge ─────────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-blue { background: #dbeafe; color: #1e3a5f; }
+  .badge-amber { background: #fef3c7; color: #78350f; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-gray { background: #f3f4f6; color: #374151; }
+
+  /* ─── Modal ─────────────────────────────── */
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 2rem;
+    width: 480px;
+    max-width: 95vw;
+    box-shadow: var(--shadow-lg);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface2);
+    color: var(--text);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .modal-actions {
+    display: flex; gap: 10px; justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  /* ─── Toast ─────────────────────────────── */
+  .toast-container {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .toast {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
+    font-size: 14px;
+    box-shadow: var(--shadow-lg);
+    display: flex; align-items: center; gap: 8px;
+    animation: slideUp 0.25s ease;
+    max-width: 320px;
+  }
+  .toast.success { background: #065f46; }
+  .toast.error { background: #991b1b; }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Empty State ─────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+  }
+  .empty-state .empty-icon { font-size: 52px; margin-bottom: 1rem; opacity: 0.4; }
+  .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text); margin-bottom: 6px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ─── Filter Row ─────────────────────────── */
+  .filter-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    padding: 0.55rem 0.9rem;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    flex: 1;
+    min-width: 180px;
+    max-width: 280px;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* ─── Dashboard Panels ─────────────────────── */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .sidebar { width: 200px; }
+    .main { margin-left: 200px; }
+  }
+
+  .event-mini-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: default;
+  }
+  .event-mini-card:last-child { border-bottom: none; }
+  .event-mini-card:hover { background: var(--surface2); }
+  .event-date-badge {
+    width: 46px; height: 46px;
+    border-radius: 10px;
+    background: var(--surface3);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .event-date-badge .day { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; line-height: 1; color: var(--accent3); }
+  .event-date-badge .mon { font-size: 9px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+  .event-mini-info h4 { font-size: 13.5px; font-weight: 500; }
+  .event-mini-info p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Registration form club types */
+  .club-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .club-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface2);
+    font-family: 'DM Sans', sans-serif;
+  }
+  .club-pill:hover { border-color: var(--accent); }
+  .club-pill.selected { border-color: var(--accent); background: #fee2e2; color: var(--accent); font-weight: 500; }
+
+  .section-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .section-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .section-header p { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ─── Sidebar ───────────────────────────────── -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🎓</div>
+    <h1>Club Management System</h1>
+    <p>Unified Platform</p>
+  </div>
+  <nav class="nav">
+    <span class="nav-section-label">Overview</span>
+    <button class="nav-item active" onclick="navigate('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+
+    <span class="nav-section-label">Events</span>
+    <button class="nav-item" onclick="navigate('events')">
+      <span class="nav-icon">📅</span> All Events
+    </button>
+    <button class="nav-item" onclick="navigate('create-event')">
+      <span class="nav-icon">➕</span> Create Event
+    </button>
+
+    <span class="nav-section-label">Members</span>
+    <button class="nav-item" onclick="navigate('registrations')">
+      <span class="nav-icon">👥</span> Registrations
+    </button>
+    <button class="nav-item" onclick="navigate('register')">
+      <span class="nav-icon">✍️</span> Register for Event
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <p>Anushka</p>
+        <span>Admin</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ─── Main ──────────────────────────────────── -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="breadcrumb" id="breadcrumb">Home / Dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary btn-sm" onclick="syncData()">🔄 Sync</button>
+      <button class="btn btn-primary btn-sm" onclick="navigate('create-event')">+ New Event</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── Dashboard ── -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon purple">📅</div>
+          <div>
+            <div class="stat-label">Total Events</div>
+            <div class="stat-value" id="stat-events">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red">✍️</div>
+          <div>
+            <div class="stat-label">Registrations</div>
+            <div class="stat-value" id="stat-regs">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🏆</div>
+          <div>
+            <div class="stat-label">Active Clubs</div>
+            <div class="stat-value">5</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">👤</div>
+          <div>
+            <div class="stat-label">Members</div>
+            <div class="stat-value">128</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Upcoming Events</div>
+              <div class="card-subtitle">Latest events from the system</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('events')">View all →</button>
+          </div>
+          <div id="dashboard-events-list">
+            <div class="empty-state">
+              <div class="empty-icon">📭</div>
+              <h3>No events yet</h3>
+              <p>Create your first event to see it here</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Registrations</div>
+              <div class="card-subtitle">Members who joined recently</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('registrations')">View all →</button>
+          </div>
+          <div id="dashboard-regs-list">
+            <div class="empty-state">
+              <div class="empty-icon">👥</div>
+              <h3>No registrations yet</h3>
+              <p>Registrations will appear here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Events List ── -->
+    <div class="view" id="view-events">
+      <div class="section-header">
+        <div>
+          <h2>All Events</h2>
+          <p>Browse and manage club events</p>
+        </div>
+        <button class="btn btn-primary" onclick="navigate('create-event')">+ Create Event</button>
+      </div>
+      <div class="filter-row">
+        <input class="search-input" type="text" placeholder="🔍  Search events..." id="event-search" oninput="renderEventsTable()" />
+      </div>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="events-table-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📅</div><h3>No events created yet</h3><p>Click "Create Event" to get started</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Create Event ── -->
+    <div class="view" id="view-create-event">
+      <div class="section-header">
+        <div>
+          <h2>Create New Event</h2>
+          <p>Fill in the details to create a club event</p>
+        </div>
+      </div>
+      <div class="card" style="max-width:580px;">
+        <div class="card-header">
+          <div class="card-title">📅 Event Details</div>
+        </div>
+        <div style="padding:1.5rem;">
+          <div class="form-group">
+            <label>Event Title *</label>
+            <input type="text" id="new-event-title" placeholder="e.g. Annual Tech Fest 2025" />
+          </div>
+          <div class="form-group">
+            <label>Event Date *</label>
+            <input type="date" id="new-event-date" />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="new-event-desc" placeholder="Describe the event, activities, venue, etc."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Club Category</label>
+            <div class="club-pills" id="club-pills">
+              <span class="club-pill" onclick="togglePill(this)">🎨 Cultural</span>
+              <span class="club-pill" onclick="togglePill(this)">💻 Technical</span>
+              <span class="club-pill" onclick="togglePill(this)">⚽ Sports</span>
+              <span class="club-pill" onclick="togglePill(this)">🎭 Drama</span>
+              <span class="club-pill" onclick="togglePill(this)">📸 Photography</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:1rem;">
+            <button class="btn btn-primary" onclick="createEvent()">✅ Create Event</button>
+            <button class="btn btn-ghost" onclick="navigate('events')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Registrations ── -->
+    <div class="view" id="view-registrations">
+      <div class="section-header">
+        <div>
+          <h2>All Registrations</h2>
+          <p>View all event registrations</p>
+        </div>
+        <button class="btn btn-primary" onclick="navigate('register')">+ Register Member</button>
+      </div>
+      <div class="filter-row">
+        <input class="search-input" type="text" placeholder="🔍  Filter by User ID or Event ID..." id="reg-search" oninput="renderRegsTable()" />
+      </div>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Reg. ID</th>
+              <th>User ID</th>
+              <th>Event</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="regs-table-body">
+            <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👥</div><h3>No registrations yet</h3><p>Click "Register Member" to add one</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Register for Event ── -->
+    <div class="view" id="view-register">
+      <div class="section-header">
+        <div>
+          <h2>Register for Event</h2>
+          <p>Enroll a member into an event</p>
+        </div>
+      </div>
+      <div class="card" style="max-width:520px;">
+        <div class="card-header">
+          <div class="card-title">✍️ Registration Form</div>
+        </div>
+        <div style="padding:1.5rem;">
+          <div class="form-group">
+            <label>Student / User ID *</label>
+            <input type="number" id="reg-user-id" placeholder="e.g. 1001" />
+          </div>
+          <div class="form-group">
+            <label>Select Event *</label>
+            <select id="reg-event-id">
+              <option value="">— Choose an event —</option>
+            </select>
+          </div>
+          <div id="reg-event-preview" style="display:none;background:var(--surface3);border-radius:10px;padding:0.85rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--accent3);">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:1rem;">
+            <button class="btn btn-primary" onclick="registerForEvent()">✅ Submit Registration</button>
+            <button class="btn btn-ghost" onclick="navigate('registrations')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ─── Toast Container ─────────────────────── -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ─── Edit Event Modal ─────────────────────── -->
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal">
+    <h2>✏️ Edit Event</h2>
+    <input type="hidden" id="edit-event-id" />
+    <div class="form-group">
+      <label>Event Title</label>
+      <input type="text" id="edit-event-title" />
+    </div>
+    <div class="form-group">
+      <label>Event Date</label>
+      <input type="date" id="edit-event-date" />
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="edit-event-desc"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('edit-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEditEvent()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Delete Confirm Modal ─────────────────── -->
+<div class="modal-backdrop" id="delete-modal">
+  <div class="modal">
+    <h2>🗑️ Delete Event</h2>
+    <input type="hidden" id="delete-event-id" />
+    <p style="font-size:15px;color:var(--text-muted);margin-bottom:1.5rem;">Are you sure you want to delete this event? This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('delete-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteEvent()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────
+const API = 'http://localhost:8080';
+let events = JSON.parse(localStorage.getItem('cms_events') || '[]');
+let registrations = JSON.parse(localStorage.getItem('cms_regs') || '[]');
+let nextEventId = parseInt(localStorage.getItem('cms_eid') || '1');
+let nextRegId = parseInt(localStorage.getItem('cms_rid') || '1');
+
+function save() {
+  localStorage.setItem('cms_events', JSON.stringify(events));
+  localStorage.setItem('cms_regs', JSON.stringify(registrations));
+  localStorage.setItem('cms_eid', nextEventId);
+  localStorage.setItem('cms_rid', nextRegId);
+}
+
+// ─── Navigation ───────────────────────────────
+const pageInfo = {
+  'dashboard':     { title: 'Dashboard',           crumb: 'Home / Dashboard' },
+  'events':        { title: 'All Events',           crumb: 'Home / Events' },
+  'create-event':  { title: 'Create Event',         crumb: 'Home / Events / Create' },
+  'registrations': { title: 'Registrations',        crumb: 'Home / Registrations' },
+  'register':      { title: 'Register for Event',   crumb: 'Home / Registrations / New' },
+};
+
+function navigate(page) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) n.classList.add('active');
+  });
+  const info = pageInfo[page] || { title: page, crumb: 'Home / ' + page };
+  document.getElementById('page-title').textContent = info.title;
+  document.getElementById('breadcrumb').textContent = info.crumb;
+
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'events') renderEventsTable();
+  if (page === 'registrations') renderRegsTable();
+  if (page === 'register') populateEventSelect();
+}
+
+// ─── Toast ────────────────────────────────────
+function toast(msg, type = 'default') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
+  el.innerHTML = (type === 'success' ? '✅ ' : type === 'error' ? '❌ ' : 'ℹ️ ') + msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─── Modal ────────────────────────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ─── Pill toggle ──────────────────────────────
+function togglePill(el) {
+  document.querySelectorAll('.club-pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── Format date ─────────────────────────────
+function fmtDate(d) {
+  if (!d) return '—';
+  try {
+    const dt = new Date(d);
+    return dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch { return d; }
+}
+
+function dayMon(d) {
+  if (!d) return { day: '?', mon: '???' };
+  try {
+    const dt = new Date(d);
+    return { day: dt.getDate(), mon: dt.toLocaleString('en-IN', { month: 'short' }).toUpperCase() };
+  } catch { return { day: '?', mon: '???' }; }
+}
+
+// ─── Dashboard ────────────────────────────────
+function renderDashboard() {
+  document.getElementById('stat-events').textContent = events.length;
+  document.getElementById('stat-regs').textContent = registrations.length;
+
+  const evEl = document.getElementById('dashboard-events-list');
+  if (!events.length) {
+    evEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><h3>No events yet</h3><p>Create your first event</p></div>';
+  } else {
+    evEl.innerHTML = events.slice(-5).reverse().map(e => {
+      const {day, mon} = dayMon(e.date);
+      return `<div class="event-mini-card">
+        <div class="event-date-badge"><span class="day">${day}</span><span class="mon">${mon}</span></div>
+        <div class="event-mini-info">
+          <h4>${esc(e.title)}</h4>
+          <p>${esc(e.description || 'No description')}</p>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const rgEl = document.getElementById('dashboard-regs-list');
+  if (!registrations.length) {
+    rgEl.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><h3>No registrations yet</h3></div>';
+  } else {
+    rgEl.innerHTML = registrations.slice(-5).reverse().map(r => {
+      const ev = events.find(e => e.id === r.eventId);
+      return `<div class="event-mini-card">
+        <div class="stat-icon blue" style="width:40px;height:40px;border-radius:10px;font-size:18px;">👤</div>
+        <div class="event-mini-info">
+          <h4>User #${r.userId}</h4>
+          <p>Event: ${ev ? esc(ev.title) : '#' + r.eventId}</p>
+        </div>
+        <span class="badge badge-green" style="margin-left:auto">Registered</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ─── Events ───────────────────────────────────
+function renderEventsTable() {
+  const q = (document.getElementById('event-search')?.value || '').toLowerCase();
+  const filtered = events.filter(e =>
+    !q || e.title.toLowerCase().includes(q) || (e.description||'').toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('events-table-body');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📅</div><h3>${events.length ? 'No results found' : 'No events yet'}</h3><p>${events.length ? 'Try a different search' : 'Click "Create Event" to get started'}</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = [...filtered].reverse().map(e => `
+    <tr>
+      <td><span class="badge badge-gray">#${e.id}</span></td>
+      <td style="font-weight:500;">${esc(e.title)}</td>
+      <td>${fmtDate(e.date)}</td>
+      <td style="color:var(--text-muted);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(e.description || '—')}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="openEditModal(${e.id})">✏️ Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${e.id})">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function createEvent() {
+  const title = document.getElementById('new-event-title').value.trim();
+  const date = document.getElementById('new-event-date').value;
+  const description = document.getElementById('new-event-desc').value.trim();
+  if (!title) { toast('Please enter an event title', 'error'); return; }
+  if (!date) { toast('Please select a date', 'error'); return; }
+
+  const event = { id: nextEventId++, title, date, description };
+  events.push(event);
+  save();
+
+  // Try real API
+  try {
+    await fetch(`${API}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, date, description })
+    });
+  } catch { /* backend offline: saved locally */ }
+
+  toast('Event created successfully!', 'success');
+  document.getElementById('new-event-title').value = '';
+  document.getElementById('new-event-date').value = '';
+  document.getElementById('new-event-desc').value = '';
+  document.querySelectorAll('.club-pill').forEach(p => p.classList.remove('selected'));
+  navigate('events');
+}
+
+function openEditModal(id) {
+  const e = events.find(x => x.id === id);
+  if (!e) return;
+  document.getElementById('edit-event-id').value = id;
+  document.getElementById('edit-event-title').value = e.title;
+  document.getElementById('edit-event-date').value = e.date;
+  document.getElementById('edit-event-desc').value = e.description || '';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function saveEditEvent() {
+  const id = parseInt(document.getElementById('edit-event-id').value);
+  const title = document.getElementById('edit-event-title').value.trim();
+  const date = document.getElementById('edit-event-date').value;
+  const description = document.getElementById('edit-event-desc').value.trim();
+  if (!title) { toast('Title required', 'error'); return; }
+  const idx = events.findIndex(e => e.id === id);
+  if (idx !== -1) { events[idx] = { ...events[idx], title, date, description }; save(); }
+  closeModal('edit-modal');
+  toast('Event updated!', 'success');
+  renderEventsTable();
+  renderDashboard();
+}
+
+function openDeleteModal(id) {
+  document.getElementById('delete-event-id').value = id;
+  document.getElementById('delete-modal').classList.add('open');
+}
+
+function confirmDeleteEvent() {
+  const id = parseInt(document.getElementById('delete-event-id').value);
+  events = events.filter(e => e.id !== id);
+  registrations = registrations.filter(r => r.eventId !== id);
+  save();
+  closeModal('delete-modal');
+  toast('Event deleted', 'default');
+  renderEventsTable();
+  renderDashboard();
+}
+
+// ─── Registrations ────────────────────────────
+function renderRegsTable() {
+  const q = (document.getElementById('reg-search')?.value || '').toLowerCase();
+  const filtered = registrations.filter(r =>
+    !q || String(r.userId).includes(q) || String(r.eventId).includes(q)
+  );
+  const tbody = document.getElementById('regs-table-body');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👥</div><h3>${registrations.length ? 'No results' : 'No registrations yet'}</h3></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = [...filtered].reverse().map(r => {
+    const ev = events.find(e => e.id === r.eventId);
+    return `<tr>
+      <td><span class="badge badge-gray">#${r.id}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--accent3);">${r.userId % 10}</div>
+          User #${r.userId}
+        </div>
+      </td>
+      <td>${ev ? `<span style="font-weight:500">${esc(ev.title)}</span><br><span style="font-size:12px;color:var(--text-muted)">${fmtDate(ev.date)}</span>` : `<span class="badge badge-amber">Event #${r.eventId}</span>`}</td>
+      <td><span class="badge badge-green">Registered</span></td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteReg(${r.id})">🗑️ Remove</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function deleteReg(id) {
+  registrations = registrations.filter(r => r.id !== id);
+  save();
+  toast('Registration removed', 'default');
+  renderRegsTable();
+  renderDashboard();
+}
+
+function populateEventSelect() {
+  const sel = document.getElementById('reg-event-id');
+  sel.innerHTML = '<option value="">— Choose an event —</option>' +
+    events.map(e => `<option value="${e.id}">${esc(e.title)} (${fmtDate(e.date)})</option>`).join('');
+  sel.onchange = () => {
+    const id = parseInt(sel.value);
+    const ev = events.find(e => e.id === id);
+    const prev = document.getElementById('reg-event-preview');
+    if (ev) {
+      prev.style.display = 'block';
+      prev.innerHTML = `📅 <strong>${esc(ev.title)}</strong> — ${fmtDate(ev.date)}<br><span style="color:var(--text-muted)">${esc(ev.description || 'No description')}</span>`;
+    } else {
+      prev.style.display = 'none';
+    }
+  };
+}
+
+async function registerForEvent() {
+  const userId = parseInt(document.getElementById('reg-user-id').value);
+  const eventId = parseInt(document.getElementById('reg-event-id').value);
+  if (!userId || userId < 1) { toast('Please enter a valid User ID', 'error'); return; }
+  if (!eventId) { toast('Please select an event', 'error'); return; }
+
+  const dup = registrations.find(r => r.userId === userId && r.eventId === eventId);
+  if (dup) { toast('User is already registered for this event!', 'error'); return; }
+
+  const reg = { id: nextRegId++, userId, eventId };
+  registrations.push(reg);
+  save();
+
+  try {
+    await fetch(`${API}/register-event`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, eventId })
+    });
+  } catch { /* saved locally */ }
+
+  toast('Registration successful!', 'success');
+  document.getElementById('reg-user-id').value = '';
+  document.getElementById('reg-event-id').value = '';
+  document.getElementById('reg-event-preview').style.display = 'none';
+  navigate('registrations');
+}
+
+// ─── Sync with real backend ────────────────────
+async function syncData() {
+  try {
+    const [evRes, regRes] = await Promise.all([
+      fetch(`${API}/events`),
+      fetch(`${API}/register-event`)
+    ]);
+    if (evRes.ok) {
+      const backendEvents = await evRes.json();
+      if (backendEvents.length) {
+        events = backendEvents;
+        if (events.length) nextEventId = Math.max(...events.map(e => e.id)) + 1;
+        save();
+        toast('Synced events from backend!', 'success');
+      }
+    }
+    if (regRes.ok) {
+      const backendRegs = await regRes.json();
+      if (backendRegs.length) {
+        registrations = backendRegs;
+        if (registrations.length) nextRegId = Math.max(...registrations.map(r => r.id)) + 1;
+        save();
+        toast('Synced registrations from backend!', 'success');
+      }
+    }
+  } catch {
+    toast('Backend offline — using local data', 'default');
+  }
+  renderDashboard();
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Init ─────────────────────────────────────
+renderDashboard();
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import api from './api';
 
@@ -28,7 +28,7 @@ function downloadCertificate(certEl, fileName) {
     </head>
     <body>
       ${certEl.innerHTML}
-      <script>window.onload = function() { window.print(); }<\/script>
+      <script>window.onload = function() { window.print(); }</script>
     </body>
     </html>`;
 

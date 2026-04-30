@@ -1,6 +1,8 @@
-// In production, requests go to the same domain (Nginx proxies /api/ to backend).
-// In development, point to localhost:8082.
-const baseURL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8082';
+// In development, point to the local backend.
+// In production, use an explicit backend URL from the environment.
+const baseURL =
+  process.env.REACT_APP_API_BASE_URL ||
+  (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8082');
 
 async function request(path, options = {}) {
   const response = await fetch(`${baseURL}${path}`, {

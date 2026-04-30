@@ -1,0 +1,19 @@
+[Unit]
+Description=QTrack Spring Boot Backend
+After=network.target mysql.service
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/qtrack
+ExecStart=/usr/bin/java -jar /home/ubuntu/qtrack/app.jar
+Environment=SERVER_PORT=8082
+Environment=DB_URL=jdbc:mysql://localhost:3306/collegeclubdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+Environment=DB_DRIVER=com.mysql.cj.jdbc.Driver
+Environment=DB_USERNAME=clubapp
+Environment=DB_PASSWORD=QTrack@2026Secure
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
